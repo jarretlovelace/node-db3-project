@@ -8,34 +8,32 @@ function find() { // EXERCISE A
     .count('st.step_id as number_of_steps')
     .orderBy('sc.scheme_id', 'asc')
 }
-
-
-async function findById(scheme_id) { // EXERCISE B
+async function findById(scheme_id) {
   const rows = await db('schemes as sc')
     .leftJoin('steps as st', 'sc.scheme_id', 'st.scheme_id')
     .select('sc.scheme_id', 'sc.scheme_name', 'st.step_id', 'st.step_number', 'st.instructions')
     .where('sc.scheme_id', scheme_id)
-    .orderBy('st.step_number', 'asc')
+    .orderBy('st.step_number', 'asc');
 
   if (rows.length === 0) {
-    return null
+    return null; // Return null if the scheme doesn't exist
   }
 
   const scheme = {
     scheme_id: rows[0].scheme_id,
     scheme_name: rows[0].scheme_name,
-    steps: []
-  }
+    steps: [],
+  };
 
-  if (rows[0].step_id) { // check if there are steps
+  if (rows[0].step_id) { // Check if there are steps
     scheme.steps = rows.map(row => ({
       step_id: row.step_id,
       step_number: row.step_number,
-      instructions: row.instructions
-    }))
+      instructions: row.instructions,
+    }));
   }
 
-  return scheme
+  return scheme;
 }
 function findSteps(scheme_id) { // EXERCISE C
   return db('steps as st')
